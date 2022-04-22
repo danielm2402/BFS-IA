@@ -3,29 +3,19 @@ from Node import Node
 from Problem import Problem
 
 class Puzzle(Problem):
-    def __init__(self, initial, goal):
-        Problem.__init__(self, initial, goal)
+    def __init__(self, initial, goal, isExplicit):
+        Problem.__init__(self, initial, goal, isExplicit)
 
     def expand(self, node):
         children = []
-
-        l = self.left(node)
-        if l is not None:
-            children.append(l)
-
-        r = self.right(node)
-        if r is not None:
-            children.append(r)
-
-        u = self.up(node)
-        if u is not None:
-            children.append(u)
-
-        d = self.down(node)
-        if d is not None:
-            children.append(d)
+        print('HERE')
+        pq = self.putQueen(node)
+        if pq is not None:
+            children.append(pq)
+            return children
 
         return children
+
 
     def left(self, node):
         state = node.state
@@ -79,9 +69,28 @@ class Puzzle(Problem):
         else:
             return None
 
+    def putQueen(self, node):
+        print('1 VEZ')
+        state = node.state
+        j = self.lastQueen(state) + 1
+        if j == 0 or j != 8:
+            newstate = copy.deepcopy(state)
+            newstate[0][j-1]=1
+            newnode = Node(newstate, node, 'put')
+            return newnode
+        else:
+            return None
+
+    def lastQueen(self, state):
+        for i, row in enumerate(state):
+            for j, col in enumerate(row):
+                if col == 1:
+                    return j
+        return -1
+
     def findgap(self, state):
         for i, row in enumerate(state):
             for j, col in enumerate(row):
                 if col == 0:
-                    return i, j
+                    return j
         return -1, -1
