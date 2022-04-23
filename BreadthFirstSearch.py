@@ -8,7 +8,7 @@ class BreadthFirstSearch:
     self.problem=problem
 
   def run(self):
-    self.open.insert(0, self.problem.initial)
+    self.open.append(self.problem.initial)
     solution=[]
     if self.problem.isExplicit:
       while self.open:
@@ -44,7 +44,7 @@ class BreadthFirstSearch:
           self.close.append(actual)
           self.children = self.problem.expand(actual)
           self.clean()
-          self.open.extend(self.children)
+          self.open.insert(0,self.children)
 
       return "test"
 
