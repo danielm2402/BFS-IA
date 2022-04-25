@@ -1,62 +1,62 @@
 import copy
 from Node import Node
 from Problem import Problem
-import random
 
-class Puzzle(Problem):
-    def __init__(self, initial, goal, isExplicit):
-        Problem.__init__(self, initial, goal, isExplicit)
+
+class Queens(Problem):
+    def __init__(self, initial):
+        Problem.__init__(self, initial)
 
     def expand(self, node):
         children = []
-        pq = self.putQueen(node)
-        if pq is not None:
-            children.append(pq)
-            return children
+        nopuestos = [0,1,2,3,4,5,6,7]
 
+        for x in node.state:
+            for y in nopuestos:
+                if x == y:
+                    nopuestos.remove(x)
+        for n in nopuestos:
+            pq = self.putQueen(node, n)
+            if pq is not None:
+                children.append(pq)
         return children
 
+    def goal(self, node):
 
-    def left(self, node):
-        state = node.state
-        i, j = self.findgap(state)
-        if (i > -1 and j > -1 and j < 2):
-            newstate = copy.deepcopy(state)
-            valor = newstate[i][j + 1]
-            newstate[i][j + 1] = 0
-            newstate[i][j] = valor
-            newnode = Node(newstate, node, 'left')
-            return newnode
+        if len(node.state) != 0 and len(node.state) == 8:
+            return True
         else:
-            return None
+            return False
 
-    def putQueen(self, node):
+    def putQueen(self, node, pos):
         state = node.state
         newstate = copy.deepcopy(state)
         if len(newstate) < 8:
-            nopuestos=[0,1,2,3,4,5,6,7,8]
-            for x in newstate:
-                for y in nopuestos:
-                    if x == y:
-                        nopuestos.remove(x)
-            pos = random.choice(nopuestos)
-            count = 0
-            while self.verifyAttack(state, pos) or count < len(nopuestos):
-                self.verifyAttack(pos)
-                pos = random.choice(nopuestos)
-                count=count+1
+            if self.verifyAttack(state, pos):
+                return None
 
-            if not self.verifyAttack(state, pos):
-                newstate.append(pos)
-                newnode = Node(newstate, node, 'add')
-                return newnode
-            return None
-
+            newstate.append(pos)
+            return Node(newstate, node, 'add')
         return None
 
-
-
     def verifyAttack(self, state, pos):
-        if (pos-1) == state[-1] or (pos+1) == state[-1]:
-            return True
+        newpos = pos
+        if len(state) == 0:
+            return False
+        count = len(state) - 1
+
+        while count >= 0:
+            if state[count] == (newpos - 1):
+               return True
+            count = count - 1
+            newpos = newpos - 1
+
+        count = len(state) - 1
+        newpos = pos
+        while count >= 0:
+            if state[count] == (newpos + 1):
+                return True
+            count = count - 1
+            newpos = newpos + 1
         return False
+
